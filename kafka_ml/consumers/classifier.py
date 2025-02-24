@@ -1,3 +1,6 @@
+import sys
+sys.path.append('/home/igkh/codes/data_stack/kafka_ml/ml')
+
 from confluent_kafka import Consumer, Producer, KafkaException, KafkaError
 import json
 import numpy as np
@@ -72,7 +75,7 @@ def parse_args():
         default="./data_ppg/tests",
         help="Path to the CSV data file",
     )
-
+    return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()

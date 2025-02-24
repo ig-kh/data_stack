@@ -1,3 +1,6 @@
+import sys
+sys.path.append('/home/igkh/codes/data_stack/kafka_ml/ml')
+
 from ml import InfiniteImpulseResponseFilter, partial_vectorize
 from confluent_kafka import Consumer, Producer, KafkaException, KafkaError
 import json
@@ -48,7 +51,8 @@ class PrepocessorConsumerWrapper:
 
                 data = json.loads(msg.value().decode("utf-8"))
                 raw_data_batch = pd.DataFrame(data)
-
+                if 'Unnamed: 0' in raw_data_batch.columns:
+                    raw_data_batch = raw_data_batch.drop(columns=['Unnamed: 0'])
                 vec_data = partial_vectorize(raw_data_batch, ["Label"])
                 X_test = self.filter(vec_data["seq"])
                 y_test = self.le.transform(vec_data["stat"].ravel())
@@ -77,7 +81,7 @@ def parse_args():
         default="./data_ppg/tests",
         help="Path to the CSV data file",
     )
-
+    return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()

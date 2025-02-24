@@ -11,8 +11,8 @@ TOPIC = "raw_data"
 class DataLoaderProducerWrapper:
     def __init__(self, path, producer_id, batch_size=8, random_delay=False):
         self.df = pd.read_csv(path)
-        if "Label" in self.df.columns:
-            self.df = self.df.drop(columns=["Label"])
+        if 'Unnamed: 0' in self.df.columns:
+            self.df = self.df.drop(columns=['Unnamed: 0'])
         self.conf = {
             "bootstrap.servers": "localhost:9095",
             "client.id": f"producer_{producer_id}",
@@ -27,6 +27,7 @@ class DataLoaderProducerWrapper:
             batch = self.df.iloc[
                 i : min(i + self.batch_size, len(self.df))
             ]  # Берем батч данных
+
             messages = batch.to_dict(
                 orient="records"
             )  # Преобразуем в список JSON-объектов
@@ -53,7 +54,7 @@ def parse_args():
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=64,
+        default=8,
         help="Max number of samples per loading iteration",
     )
     return parser.parse_args()
