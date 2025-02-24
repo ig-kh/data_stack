@@ -8,23 +8,26 @@ from ml import ShapeletRidgeCLF
 
 TOPIC = "ml_result"
 
+
 class CLFConsumerWrapper:
     def __init__(self, model_path) -> None:
 
         self.model = ShapeletRidgeCLF.from_pickle(model_path)
 
         self.cons_conf = {
-            'bootstrap.servers': 'localhost:9095',
-            'group.id': 'ml-group',
-            'auto.offset.reset': 'earliest'
+            "bootstrap.servers": "localhost:9095",
+            "group.id": "ml-group",
+            "auto.offset.reset": "earliest",
         }
 
         self.prod_conf = {
-            'bootstrap.servers': 'localhost:9095',
-            'client.id': 'ml_results_producer'
+            "bootstrap.servers": "localhost:9095",
+            "client.id": "ml_results_producer",
         }
 
         self.consumer = Consumer(self.cons_conf)
+        self.consumer.subscribe(["processed_data"])
+
         self.producer = Producer(self.prod_conf)
 
     def run(self):
