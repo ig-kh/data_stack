@@ -29,7 +29,7 @@ class PrepocessorConsumerWrapper:
         }
 
         self.consumer = Consumer(self.cons_conf)
-        self.consumer.subscribe(TOPIC)
+        self.consumer.subscribe(["raw_data"])
 
         self.producer = Producer(self.prod_conf)
 
