@@ -7,7 +7,6 @@ import pickle
 
 TOPIC = "processed_data"
 
-
 class PrepocessorConsumerWrapper:
     def __init__(self, le_path) -> None:
 
@@ -29,6 +28,8 @@ class PrepocessorConsumerWrapper:
         }
 
         self.consumer = Consumer(self.cons_conf)
+        self.consumer.subscribe(['raw_data'])
+
         self.producer = Producer(self.prod_conf)
 
     def run(self):
@@ -53,7 +54,7 @@ class PrepocessorConsumerWrapper:
 
                 processed_data = {
                     "X_test": X_test.tolist(),
-                    "y_test": y_test,
+                    "y_test": y_test.tolist(),
                 }
 
                 self.producer.produce(
