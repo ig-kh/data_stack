@@ -1,3 +1,6 @@
 confluent_kafka
 pandas
 aeon
+matplotlib
+seaborn
+streamlit

@@ -1,8 +1,9 @@
-from model import ShapeletRidgeCLF
-import pandas as pd
-from preprocessing import partial_vectorize, InfiniteImpulseResponseFilter
-from sklearn.preprocessing import LabelEncoder
 import pickle
+
+import pandas as pd
+from model import ShapeletRidgeCLF
+from preprocessing import InfiniteImpulseResponseFilter, partial_vectorize
+from sklearn.preprocessing import LabelEncoder
 
 if __name__ == "__main__":
 
@@ -11,8 +12,8 @@ if __name__ == "__main__":
     model = ShapeletRidgeCLF()
 
     train_data = pd.read_csv("../data_ppg/train/ppg_train.csv")
-    if 'Unnamed: 0' in train_data.columns:
-        train_data = train_data.drop(columns=['Unnamed: 0'])
+    if "Unnamed: 0" in train_data.columns:
+        train_data = train_data.drop(columns=["Unnamed: 0"])
     vec_data = partial_vectorize(train_data, ["Label"])
     X_train = filter(vec_data["seq"])
     print(X_train.shape)

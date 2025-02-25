@@ -1,13 +1,15 @@
 import sys
-sys.path.append('/home/igkh/codes/data_stack/kafka_ml/ml')
 
-from confluent_kafka import Consumer, Producer, KafkaException, KafkaError
+sys.path.append("/home/igkh/codes/data_stack/kafka_ml/ml")
+
+import argparse
 import json
+
 import numpy as np
 import pandas as pd
-import argparse
-from ml import ShapeletRidgeCLF
+from confluent_kafka import Consumer, KafkaError, KafkaException, Producer
 
+from ml import ShapeletRidgeCLF
 
 TOPIC = "ml_result"
 
@@ -70,14 +72,14 @@ class CLFConsumerWrapper:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Kafka ")
+    parser = argparse.ArgumentParser(description="Kafka ML Model worker-consumer")
     parser.add_argument(
         "--model_path",
         type=str,
-        default="./data_ppg/tests",
-        help="Path to the CSV data file",
+        help="Path to the saved model ckpt file",
     )
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     args = parse_args()

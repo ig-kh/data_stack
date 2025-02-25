@@ -1,12 +1,15 @@
 import sys
-sys.path.append('/home/igkh/codes/data_stack/kafka_ml/ml')
+
+sys.path.append("/home/igkh/codes/data_stack/kafka_ml/ml")
+
+import argparse
+import json
+import pickle
+
+import pandas as pd
+from confluent_kafka import Consumer, KafkaError, KafkaException, Producer
 
 from ml import InfiniteImpulseResponseFilter, partial_vectorize
-from confluent_kafka import Consumer, Producer, KafkaException, KafkaError
-import json
-import pandas as pd
-import argparse
-import pickle
 
 TOPIC = "filtered_data"
 
@@ -51,8 +54,8 @@ class PrepocessorConsumerWrapper:
 
                 data = json.loads(msg.value().decode("utf-8"))
                 raw_data_batch = pd.DataFrame(data)
-                if 'Unnamed: 0' in raw_data_batch.columns:
-                    raw_data_batch = raw_data_batch.drop(columns=['Unnamed: 0'])
+                if "Unnamed: 0" in raw_data_batch.columns:
+                    raw_data_batch = raw_data_batch.drop(columns=["Unnamed: 0"])
                 vec_data = partial_vectorize(raw_data_batch, ["Label"])
                 X_test = self.filter(vec_data["seq"])
                 y_test = self.le.transform(vec_data["stat"].ravel())
@@ -74,14 +77,14 @@ class PrepocessorConsumerWrapper:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Kafka ")
+    parser = argparse.ArgumentParser(description="Kafka preprocessing worker-consumer")
     parser.add_argument(
         "--le_path",
         type=str,
-        default="./data_ppg/tests",
-        help="Path to the CSV data file",
+        help="Path to the saved LabelEncoder ckpt file",
     )
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     args = parse_args()

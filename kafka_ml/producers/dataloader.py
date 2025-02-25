@@ -1,8 +1,9 @@
 import argparse
 import json
-import time
-import pandas as pd
 import random
+import time
+
+import pandas as pd
 from confluent_kafka import Producer
 
 TOPIC = "raw_data"
@@ -11,8 +12,8 @@ TOPIC = "raw_data"
 class DataLoaderProducerWrapper:
     def __init__(self, path, producer_id, batch_size=8, random_delay=False):
         self.df = pd.read_csv(path)
-        if 'Unnamed: 0' in self.df.columns:
-            self.df = self.df.drop(columns=['Unnamed: 0'])
+        if "Unnamed: 0" in self.df.columns:
+            self.df = self.df.drop(columns=["Unnamed: 0"])
         self.conf = {
             "bootstrap.servers": "localhost:9095",
             "client.id": f"producer_{producer_id}",
@@ -43,12 +44,12 @@ class DataLoaderProducerWrapper:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Kafka Producer")
+    parser = argparse.ArgumentParser(description="Kafka Dataloader worker-producer")
     parser.add_argument(
         "--data_source",
         type=str,
         default="./data_ppg/tests",
-        help="Path to the CSV data file",
+        help="Path to the csv data file",
     )
     parser.add_argument("--producer_id", type=int, help="Data Loader ID")
     parser.add_argument(

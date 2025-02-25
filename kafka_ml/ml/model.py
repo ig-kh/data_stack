@@ -1,6 +1,7 @@
-from sklearn.linear_model import RidgeClassifier
-from aeon.classification.shapelet_based import ShapeletTransformClassifier
 import pickle
+
+from aeon.classification.shapelet_based import ShapeletTransformClassifier
+from sklearn.linear_model import RidgeClassifier
 
 
 class ShapeletRidgeCLF:
