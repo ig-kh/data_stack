@@ -29,7 +29,7 @@ class CLFConsumerWrapper:
         }
 
         self.consumer = Consumer(self.cons_conf)
-        self.consumer.subscribe(["processed_data"])
+        self.consumer.subscribe(["filtered_data"])
 
         self.producer = Producer(self.prod_conf)
 
@@ -48,6 +48,8 @@ class CLFConsumerWrapper:
 
                 data = json.loads(msg.value().decode("utf-8"))
                 X_test = data["X_test"]
+                X_test = np.vstack([np.asarray(s) for s in X_test])
+
                 y_pred = self.model.predict(X_test)
                 y_test = data["y_test"]
 

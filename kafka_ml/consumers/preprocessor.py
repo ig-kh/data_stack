@@ -8,7 +8,7 @@ import pandas as pd
 import argparse
 import pickle
 
-TOPIC = "processed_data"
+TOPIC = "filtered_data"
 
 
 class PrepocessorConsumerWrapper:

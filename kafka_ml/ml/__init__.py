@@ -1,2 +1,2 @@
-from model import ShapeletRidgeCLF
-from preprocessing import InfiniteImpulseResponseFilter, partial_vectorize
+from .model import ShapeletRidgeCLF
+from .preprocessing import InfiniteImpulseResponseFilter, partial_vectorize
