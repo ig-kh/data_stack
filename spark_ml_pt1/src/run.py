@@ -112,10 +112,6 @@ if __name__ == "__main__":
         ppg_df.show()
 
     ppg_df = ppg_df.withColumn("ppg_ts_array", F.array(*ts_cols)).drop(*ts_cols)
-    
-    if args.opt:
-        ppg_df = ppg_df.persist(StorageLevel.MEMORY_AND_DISK)
-        ppg_df.count()
 
     ppg_df = iirf_transform(ppg_df, "ppg_ts_array", "label_encoded")
 
