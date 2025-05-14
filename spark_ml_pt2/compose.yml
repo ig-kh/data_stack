@@ -1,0 +1,18 @@
+services:
+  spark:
+    build:
+      context: .
+      dockerfile: spark.Dockerfile
+    container_name: spark
+    environment:
+      - PYSPARK_PYTHON=python3
+      - PYSPARK_DRIVER_PYTHON=python3
+      - SPARK_HOME=/opt/bitnami/spark
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+      - ./mlruns:/app/mlruns
+    working_dir: /app
+    ports:
+      - "4040:4040"  # Spark
+      - "5000:5000"  # MLflow
