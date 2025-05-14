@@ -17,9 +17,9 @@ if __name__ == "__main__":
 
     spark.sparkContext.setLogLevel('ERROR')
 
-    df_raw = spark.read.csv(args.src, header=True, inferSchema=True)
+    raw_df = spark.read.csv(args.src, header=True, inferSchema=True)
 
-    df_raw.write.format("delta").mode("overwrite").save(args.dst)
+    raw_df.write.format("delta").mode("overwrite").save(args.dst)
 
     print("\033[0;32m[ᕕ( ᐛ )ᕗ]\033[0m Data saved as Delta table at \033[1;31mBRONZE\033[0m layer")
 
