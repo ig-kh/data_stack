@@ -1,4 +1,5 @@
-# ∆-lake 🏞️ feat. 🐍PySpark✨ and 🌴xgboost🌳: [💾🌐🗃️ → 🥉 → 🥈 → 🥇 → 🤖📊](run_pipe.sh)
+# ∆-lake 🏞️ feat. 🐍PySpark✨ and 🌴xgboost🌳<br>
+### 👉 [💾🌐🗃️ → 🥉 → 🥈 → 🥇 → 🤖📊](run_pipe.sh) 👈
 
 ## Stage 0 [📥]: Dump data from internet. <br>
 Download credit scoring dataset from kaggle: https://www.kaggle.com/api/v1/datasets/download/parisrohan/credit-score-classification; dump it to raw data storage and unzip. Source can be seen [here](./src/stage_0.sh).<br>
