@@ -1,4 +1,4 @@
-# ∆-lake 🏞️ feat. 🐍PySpark✨ and 🌴xgboost🌳<br>
+# ∆-lake 🏞️ feat. 🐍PySpark✨ and 🌴xgboost🌳 for 💵credit score classification🧮<br>
 ### 👉 [💾🌐🗃️ → 🥉 → 🥈 → 🥇 → 🤖📊](run_pipe.sh) 👈
 
 ## Stage 0 [📥]: Dump data from internet. <br>
@@ -7,11 +7,20 @@ Download credit scoring dataset from kaggle: https://www.kaggle.com/api/v1/datas
 Collects data from raw storage and save it in delta format to bronze layer. Source can be seen [here](./src/stage_1.py).<br>
 ## Stage 2 [🥉 → 🥈]: <br>
 Load data from bronze layer, then perform following: <br>
-1. Drop rows with nulls in columns 
-2. 
-3.
+1. Narrow down attributes to only necessary
+2. Cast to proper numerical types where applicable
+3. Parse complex types discribes as strings
+4. Fill nulls via heuristics
+5. Drop remaining nulls
+6. Optimize data via z-ordering and compaction
 Source can be seen [here](./src/stage_2.py).<br>
 ## Stage 3 [🥈 → 🥇]: <br>
+Aggregate user info from silver layer based on business logic for completing customer profiling. <br>
+Rules for aggregatation and feature-engineering are following: <br>
+1. 
+2. 
+3. 
+4. Encode remainig str-typed attributes
 Source can be seen [here](./src/stage_3.py).<br>
 ## Stage 4 [🥇 → 🤖📊]: <br>
 Source can be seen [here](./src/stage_4.py).<br>

@@ -1,39 +1,72 @@
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, Window
 from delta.tables import DeltaTable
 from argparse import ArgumentParser
 from pyspark.sql import types as T
 from pyspark.sql import functions as F
 
 
-@F.udf(returnType=T.IntegerType())  # AGE attribute
-def normalize_age(age_str: str):
-    return int(age_str.replace(" ", "").replace("-", "").replace("_", ""))
+@F.udf(returnType=T.IntegerType())  # AGE, NUM_OF_DELAYED_PAYMENT attributes
+def normalize_int(int_str: str, allow_neg=False):
+    int_str = int_str.replace(" ", "").replace("_", "")
+    if not allow_neg:
+        int_str = int_str.replace("-", "")
+    return float(int_str)
 
 
-@F.udf(returnType=T.LongType())  # ANNUAL_INCOME attribute
-def normalize_money(amount_str: str):
-    return float(amount_str.replace(" ", "").replace("-", "").replace("_", ""))
+@F.udf(returnType=T.LongType())  # MONTHLY_INHAND_SALARY, ANNUAL_INCOME attributes
+def normalize_float(float_str: str, allow_neg=False):
+    float_str = float_str.replace(" ", "").replace("_", "")
+    if not allow_neg:
+        float_str = float_str.replace("-", "")
+    return float(float_str)
 
 
-def YM2M_parse_transform(df, col):  # CREDIT_HISTORY_AGE attribute
+def YM2M_parse_transform(
+    df, col, regexp=r"(\d+) Years\s*and\s*(\d+) Months", ypos=1, mpos=2
+):  # CREDIT_HISTORY_AGE attribute
     df = df.withColumn(
         f"{col}_Y",
-        F.regexp_extract_all("col", F.lit(r"(\d+) Years\s*and\s*(\d+) Months"), 1),
+        F.regexp_extract_all("col", F.lit(regexp), ypos),
     )
     df = df.withColumn(
         f"{col}_M",
-        F.regexp_extract_all("col", F.lit(r"(\d+) Years\s*and\s*(\d+) Months"), 2),
+        F.regexp_extract_all("col", F.lit(regexp), mpos),
     )
     df = df.withColumn(
-        f"{col}_transformed",
+        f"{col}_months",
         F.when(F.col(f"{col}_Y") != "").otherwise(0) * 12
         + F.when(F.col(f"{col}_M") != "").otherwise(0),
     )
     return df.drop(col, f"{col}_Y", f"{col}_M")
 
 
-def reconstruct_by_group_mode(df, damaged_col, reference_col):
-    
+def group_bf_fill(
+    df, damaged_col, grouping_col, sort_col
+):  # NUM_OF_DELAYED_PAYMENT attribute
+    """backward-forward fill for nulls based on sharing data values inside group"""
+    ffill_w = Window.partitionBy(grouping_col).orderBy(sort_col)
+    bfill_w = ffill_w.rowsBetween(Window.unboundedPreceding, Window.unboundedFollowing)
+    return df.withColumn(
+        f"{damaged_col}_imputed",
+        F.coalesce(
+            F.last(damaged_col, True).over(ffill_w),
+            F.first(damaged_col, True).over(bfill_w),
+        ),
+    ).drop(damaged_col)
+
+
+USE_COLS = [
+    "id",
+    "customer_id",
+    "month",
+    "age",
+    "annual_income",
+    "credit_history_age",
+    "monthly_inhand_salary",
+    "num_of_delayed_payment",
+    "credit_utilization_ratio",
+    "credit_score",
+]
 
 if __name__ == "__main__":
 
