@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession, Window
 from delta.tables import DeltaTable
 from argparse import ArgumentParser
 from pyspark.sql import functions as F
-
+from pyspark.ml.feature import StringIndexer
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -45,6 +45,14 @@ if __name__ == "__main__":
         "credit_score",
     ]
     gold_df = gold_df.select(ml_features)
+
+    indexer = StringIndexer(
+        inputCol="credit_score",
+        outputCol="credit_score_class",
+        handleInvalid="keep"
+    )
+    indexer_model = indexer.fit(gold_df)
+    gold_df = indexer_model.transform(gold_df)
 
     # Write to gold layer
     gold_df.write.format("delta").mode("overwrite").save(args.dst)

@@ -19,7 +19,9 @@ Aggregate user info from silver layer based on business logic for completing cus
 Rules for aggregatation and feature-engineering are following: <br>
 1. Select Latest Record: Uses a window function to assign row numbers within customer_id partitions, ordered by month descending, and selects the latest record
 2. Feature Selection: Retains ML-relevant features
-3. No Additional Feature Engineering: Preserves cleaned, numerical data from the silver layer for ML compatibility.
+3. No Additional Feature Engineering: Preserves cleaned, numerical data from the silver layer for ML compatibility
+4. Encode remainig str-typed attributes
 Source can be seen [here](./src/stage_3.py).<br>
 ## Stage 4 [🥇 → 🤖📊]: <br>
+
 Source can be seen [here](./src/stage_4.py).<br>

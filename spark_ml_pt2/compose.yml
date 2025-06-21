@@ -8,11 +8,21 @@ services:
       - PYSPARK_PYTHON=python3
       - PYSPARK_DRIVER_PYTHON=python3
       - SPARK_HOME=/opt/bitnami/spark
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+      - PYTHONPATH=/app/src
     volumes:
       - ./src:/app/src
       - ./data:/app/data
+      - ./conf:/app/conf
       - ./mlruns:/app/mlruns
+      - ./output:/app/output
     working_dir: /app
     ports:
-      - "4040:4040"  # Spark
-      - "5000:5000"  # MLflow
+      - "4040:4040"  # Spark UI
+      - "5000:5000"  # MLflow UI
+    command: >
+      sh -c "
+        mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlruns/mlflow.db --default-artifact-root /app/mlruns &
+        tail -f /dev/null
+      "
+    user: "1001:1001"
