@@ -11,16 +11,15 @@ Load data from bronze layer, then perform following: <br>
 2. Cast to proper numerical types where applicable
 3. Parse complex types discribes as strings
 4. Fill nulls via heuristics
-5. Drop remaining nulls
+5. Drop remaining nulls<br>
 6. Optimize data via z-ordering and compaction
 Source can be seen [here](./src/stage_2.py).<br>
 ## Stage 3 [🥈 → 🥇]: <br>
 Aggregate user info from silver layer based on business logic for completing customer profiling. <br>
 Rules for aggregatation and feature-engineering are following: <br>
-1. 
-2. 
-3. 
-4. Encode remainig str-typed attributes
+1. Select Latest Record: Uses a window function to assign row numbers within customer_id partitions, ordered by month descending, and selects the latest record
+2. Feature Selection: Retains ML-relevant features
+3. No Additional Feature Engineering: Preserves cleaned, numerical data from the silver layer for ML compatibility.
 Source can be seen [here](./src/stage_3.py).<br>
 ## Stage 4 [🥇 → 🤖📊]: <br>
 Source can be seen [here](./src/stage_4.py).<br>
