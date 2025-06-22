@@ -10,27 +10,19 @@ import argparse
 from omegaconf import OmegaConf
 import os
 import logging
-import matplotlib.pyplot as plt
-from scipy.stats import entropy
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute_bias_variance(predictions, true_labels, n_classes):
-    """Approximate bias and variance for batched predictions."""
-    main_pred = np.apply_along_axis(lambda x: np.bincount(x, minlength=n_classes).argmax(), axis=1, arr=predictions)
-    bias = np.mean((main_pred - true_labels) ** 2)
-    pred_counts = np.array([np.bincount(pred, minlength=n_classes) for pred in predictions])
-    pred_probs = pred_counts / pred_counts.sum(axis=1, keepdims=True)
-    variance = np.mean([entropy(probs) for probs in pred_probs])
-    return bias, variance
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--src", required=True, help="Path to the gold data Delta table")
-    parser.add_argument("--config", required=True, help="Path to the configuration file")
+    parser.add_argument("--src")
+    parser.add_argument("--config")
     args = parser.parse_args()
+
+    # Set MLflow tracking URI
+    mlflow.set_tracking_uri("http://0.0.0.0:5002")
 
     # Load configuration
     logger.info(f"Loading configuration from {args.config}")
@@ -120,51 +112,13 @@ if __name__ == "__main__":
         mlflow.log_metric("std_cv_accuracy", std_accuracy)
         mlflow.log_metric("mean_cv_f1_score", mean_f1)
         mlflow.log_metric("std_cv_f1_score", std_f1)
-        logger.info(f"CV Results - Mean Accuracy: {mean_accuracy:.4f} (±{std_accuracy:.4f}), Mean F1-Score: {mean_f1:.4f} (±{std_f1:.4f})")
+        logger.info(f"CV Results - Mean Accuracy: {mean_accuracy:.4f} (+/-{std_accuracy:.4f}), Mean F1-Score: {mean_f1:.4f} (+/-{std_f1:.4f})")
 
         # Train final model
         logger.info("Training final model on full data")
         final_model = xgb.XGBClassifier(**OmegaConf.to_container(cfg.xgboost, resolve=True))
         final_model.fit(X, y)
         mlflow.xgboost.log_model(final_model, "final_xgboost_model")
-
-        # Bias-variance decomposition
-        logger.info("Computing bias-variance decomposition")
-        n_classes = cfg.xgboost.num_class
-        batch_size = cfg.train.batch_size
-        biases = []
-        variances = []
-
-        for start in range(0, len(y), batch_size):
-            end = min(start + batch_size, len(y))
-            batch_preds = all_predictions[start:end]
-            batch_labels = y[start:end]
-            bias, variance = compute_bias_variance(batch_preds, batch_labels, n_classes)
-            biases.append(bias)
-            variances.append(variance)
-
-        mean_bias = np.mean(biases)
-        mean_variance = np.mean(variances)
-        mlflow.log_metric("mean_bias", mean_bias)
-        mlflow.log_metric("mean_variance", mean_variance)
-        logger.info(f"Bias-Variance - Mean Bias: {mean_bias:.4f}, Mean Variance: {mean_variance:.4f}")
-
-        # Prediction entropy visualization
-        logger.info("Generating prediction entropy histogram")
-        pred_counts = np.array([np.bincount(pred.astype(int), minlength=n_classes) for pred in all_predictions])
-        pred_probs = pred_counts / pred_counts.sum(axis=1, keepdims=True)
-        entropies = [entropy(probs) for probs in pred_probs]
-        
-        plt.figure(figsize=(8, 6))
-        plt.hist(entropies, bins=30, edgecolor="black")
-        plt.title("Distribution of Prediction Entropy Across Folds")
-        plt.xlabel("Entropy")
-        plt.ylabel("Frequency")
-        entropy_plot_path = "entropy_histogram.png"
-        plt.savefig(entropy_plot_path)
-        plt.close()
-        mlflow.log_artifact(entropy_plot_path)
-        os.remove(entropy_plot_path)
 
         # Save CV results
         output_path = cfg.train.output_path
@@ -178,5 +132,5 @@ if __name__ == "__main__":
         mlflow.log_artifact(output_path)
 
     # Stop Spark session
-    logger.info("Stopping Spark session")
+    print("\033[0;32m[♡〜٩( ˃▿˂ )۶〜♡]\033[0m XGBoost metrics and params are available at \33[0;34mMLFLOW\033[0m!")
     spark.stop()

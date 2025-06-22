@@ -9,8 +9,8 @@ SPARK_C='\033[1;36m'
 MLFLOW_C='\033[1;34m'
 NC='\033[0m'
 
-# echo "${BOLD}Running stage 0:${NC} Dump data"
-# bash src/stage_0.sh
+echo "${BOLD}Running stage 0:${NC} Dump data"
+bash src/stage_0.sh
 
 echo "${BOLD}Running stage 1:${NC} Move data to ${BRONZE_C}BRONZE${NC} layer as Delta table"
 
@@ -29,10 +29,6 @@ echo "${BOLD}Running stage 3:${NC} Aggregate ${SILVER_C}SILVER${NC} layer data a
 docker exec -t spark spark-submit --packages io.delta:delta-spark_2.12:3.2.0 \
  --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
  --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"  /app/src/stage_3.py --src ./data/silver/train  --dst ./data/gold/train
-
-
-docker exec -t spark mlflow server --host 0.0.0.0 --port 5000 &
-sleep 5
 
 echo "${BOLD}Running stage 4:${NC} Running train on ${GOLD_C}GOLD${NC} layer"
 

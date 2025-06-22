@@ -7,7 +7,7 @@ from pyspark.sql import functions as F
 
 @F.udf(returnType=T.IntegerType())  # AGE, NUM_OF_DELAYED_PAYMENT attributes
 def normalize_int(int_str: str, allow_neg=False):
-    if int_str is None:
+    if not isinstance(int_str, str):
         return 0
     int_str = int_str.replace(" ", "").replace("_", "")
     if not allow_neg:
@@ -17,7 +17,7 @@ def normalize_int(int_str: str, allow_neg=False):
 
 @F.udf(returnType=T.DoubleType())  # MONTHLY_INHAND_SALARY, ANNUAL_INCOME attributes
 def normalize_float(float_str: str, allow_neg=False):
-    if float_str is None:
+    if not isinstance(float_str, str):
         return 0.
     float_str = float_str.replace(" ", "").replace("_", "")
     if not allow_neg:
@@ -97,8 +97,8 @@ if __name__ == "__main__":
     bronze_df = bronze_df.withColumn("num_of_delayed_payment", normalize_int(F.col("num_of_delayed_payment")))
 
     # Parse float columns
-    # bronze_df = bronze_df.withColumn("annual_income", normalize_float(F.col("annual_income")))
-    # bronze_df = bronze_df.withColumn("monthly_inhand_salary", normalize_float(F.col("monthly_inhand_salary")))
+    bronze_df = bronze_df.withColumn("annual_income", normalize_float(F.col("annual_income")))
+    bronze_df = bronze_df.withColumn("monthly_inhand_salary", normalize_float(F.col("monthly_inhand_salary")))
 
     # Parse credit history age
     bronze_df = YM2M_parse_transform(bronze_df, "credit_history_age")
@@ -131,6 +131,7 @@ if __name__ == "__main__":
         # Compact table
         delta_table.optimize().executeCompaction()
         print("\033[0;32m[三ᕕ( ᐛ )ᕗ]\033[0m Cleared data with proper typing saved as Z-ordered Delta table at \033[1;30mSILVER\033[0m layer")
+        spark.stop()
     except Exception as e:
         print(f"Failed to optimize Delta table: {str(e)}")
         spark.stop()

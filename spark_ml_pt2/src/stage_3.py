@@ -64,6 +64,7 @@ if __name__ == "__main__":
         # Compact table
         delta_table.optimize().executeCompaction()
         print("\033[0;32m[◝(ᵔᗜᵔ)◜]\033[0m ML-ready aggregated features are now available at \033[1;33mGOLD\033[0m layer!")
+        spark.stop()
     except Exception as e:
         print(f"Failed to optimize Delta table: {str(e)}")
         spark.stop()
