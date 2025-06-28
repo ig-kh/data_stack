@@ -1,3 +1,4 @@
+![alt text](image.png)
 1. В качестве данных использован сплит из датасета https://www.kaggle.com/datasets/ucimachinelearning/photoplethysmography-ppg-dataset (300 MB); дополнительно на их основе при помощи обычной дупликации создал увеличенную версию (3 GB, замеры обозначаются XXL суффиксом).
 Скрипт совершает кодирование лейблов и iir-фильтрацию показаний прибора.
 2. src/run.py - приложение на pyspark с обработкой csv-файла; запуски экспериментов осуществляются в скриптах {run_experements_multi_node, run_experements_multi_node_XXL, run_experements_single_node, run_experements_single_node_XXL}.sh; сконфигурированы в файлах dockerfile/compose_.yml и hadoop.cfg .
