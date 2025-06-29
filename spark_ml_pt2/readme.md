@@ -25,7 +25,7 @@ Rules for aggregatation and feature-engineering are following: <br>
 4. Encode remainig str-typed attributes <br>
 Source can be seen 👉[here](./src/stage_3.py).<br>
 ## Stage 4 [🥇 → 🤖📊]: <br>
-Perform application of ML based on the data form gold layer, namely:
+Perform application of ML based algoritm on the data form gold layer, namely:
 1. Read pre-encoded ML-Ready features that comply with common business logic
 2. Perform k-fold CV, train and evaluate XGBoost models
 3. Logging parameters, accuracy and F1-score to MLflow <br>
