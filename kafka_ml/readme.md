@@ -8,28 +8,41 @@ The task is based on synthetical dataset containing timeserieses describing PPG 
 ## Kafka [🕸]: Producer-Consumer architecture. <br>
 The architecture of application is based on producer-consumer scheme implemented in confluent kafka for python PL.
 
-
+The data is collected and broadcasted by dataloader prodeucer.
 Source can be seen 👉[here](./producers/dataloader).<br>
 
-Source can be seen 👉[here](./consumers/).<br>
+The main workload of app is spred across three consumers:
+
+- preprocessor
+- classifier
+- plotter
+
+who carry out data transformation, machine learning algorithm and calculation of qualitive metrics as well as display of them respectively. 
+
+Sources can be seen 👉[here](./consumers/).<br>
 
 ## AEON-ML [⏳🤖]: Perform classification. <br>
 
-For better application of Machine Learning algorithm as a preprocessing an Infinite Impulse Response Filter was used. 
+The main framework goes as follows: the model is trained in offline in the setup described  👉[here](./ml/train.py).
 
-Source can be seen 👉[here](./consumers/preprocessor.py).<br>
+The pipeline includes application of 👉[shapelet learning](https://www.aeon-toolkit.org/en/stable/examples/classification/shapelet_based.html) and simple classifier based on extracted features.
 
+For better application of Machine Learning algorithm as a preprocessing an Infinite Impulse Response Filter was used. The labeles are represented as _str_ type and are encoded as _int_ classes with LabelEncoder.
+
+The IIRF is applied in online manner as seen
+👉[here](./consumers/preprocessor.py) in special preprocessor-consumer.<br>
+
+Classifier checkpoint is loaded to produce online prediction at init stage of classifier-consumer.
 Source can be seen 👉[here](./consumers/classifier.py).<br>
 
 ## StreamLit [👑]: Results live demo. <br>
-A live demonstrarion of 
+A live demonstrarion of metrics (f1, ConfusionMatrix) as well as their calculation happens inside matplotlib based plotter entity, the plots are brought to live with dedicated StreamLit service.<br>
 Source can be seen 👉[here](./consumers/plotter.py).<br>
-### 👉 [⛔](stop_pipe.sh) 👈
 
-<!-- Репозиторий реализует инференс модели шейплетной классификации данных с медицинского прибора.
+## Containerization [🐳]: Docker
+All entities as well as ad hoc py venv are loaded and running inside 👉[Docker containers](./docker-compose.yaml).
 
-2 продюсера (producers/dataloadr.py) подбирают данные из разных csv файлов, через брокер они попадают в препроцессинг (consumers/preprocessor.py), оттуда фильрованые данные с закодированными лейблами попадают в воркер с моделью (consumers/classifier.py), и наконец метрика считается и отображается графически в плотере (consumers/plotter.py).
+## Customization [⚙️🛠️]:
+All entities can be tuned at start via command line arguments which include loading and batching parameters as well as model and encoder checkpoint paths.
 
-Скрипты загрузки парамтеризованы батч сайзом и путями к данным(в лоудере); консюмеры по потребности подгружают гтовые чекпоинты модели и лейбл-энкодера (они предварительно готовятся в ml/train.py; там же и сиходные файлы МЛ-составляющих).
-
-Для запуска скрипта используется run_pipe.sh, для остановки stop_pipe.sh; run_pipe.sh автоматически подгружает в венве, распололоженнос в директории (не создан предварительно) нужные библиотеки, точка запуска - текущая директория (kafka_ml). -->
+### 👉 [⛔Stop running services⛔](stop_pipe.sh) 👈

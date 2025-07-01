@@ -4,7 +4,7 @@
 ![alt text](image.png)
 
 ## Stage 0 [📥]: Dump data from internet. <br>
-Download credit scoring dataset from kaggle: https://www.kaggle.com/api/v1/datasets/download/parisrohan/credit-score-classification; dump it to raw data storage and unzip. Source can be seen [here](./src/stage_0.sh).<br>
+Download credit scoring dataset from kaggle: https://www.kaggle.com/api/v1/datasets/download/parisrohan/credit-score-classification; dump it to raw data storage and unzip. Source can be seen 👉[here](./src/stage_0.sh).<br>
 ## Stage 1 [💾🌐🗃️ → 🥉]: Load raw data to Bronze layer. <br>
 Collects data from raw storage and save it in delta format to bronze layer. Source can be seen 👉[here](./src/stage_1.py).<br>
 ## Stage 2 [🥉 → 🥈]: <br>
