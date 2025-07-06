@@ -4,7 +4,6 @@
 ![alt text](image.png)
 
 <!--
-3. Само spark приложение дополнительно конфигурируется флагами (--opt - применеие оптимизаций, --pth - путь к файлу, --dbg - дебаг) и запускается через spark submit (с указанием дополнительных исходных кодов через --jars).
 4. В приложении применены 2 оптимизаци - репартицирование и вызов skala-udf (исходные коды и результаты сборки sbt в src/skala/iirf/*; не все результаты работы перенесены, но снапшот-jar загружен) вместо python-udf. 
 -->
 
@@ -27,11 +26,26 @@ The setup is configured by associated .yml file as it is passed as a *positional
 
 Run starups are incopsulted inside *run_experiments\** shell scripts (e.g. 👉[this script](./run_experements_single_node.sh)) for automated logs collections for further performance assesment.
 
-### Optimization [🐍⚡️]: Partitioning and efficient functions
+The script is run via spark submit, ignoring default startup options for Spark on Hadoop, the run is controlled by the following arguments:
+
+> ***--pth*** path to data (default or XXL) <br>
+***--dbg*** flag that enables debugging (not used inside experiments runs) <br>
+***--opt*** flag switching default version of script to the one, involving perfomance optimizations <br>
+***--jars*** path argument for including side precompiled jvm executables (used for optimization in the next section) <br>
+
+### Optimization [🧩⚡️]: Partitioning and efficient functions
+
+In order to optimize the run two optimizations are presented:
+
+1. Before application of trandforms the dataframe is repartitioned to comply with *sparkContext.defaultParallelism* as seen 
+
+2. The IIRF is also implented in Scala PL as seen 👉[here](.src/scala/iirf/src/main/scala/Main.scala). Precompiled jar (via [sbt](https://www.scala-sbt.org/), the snapshot is placed inside an 👉[ad hoc folder](./src/scala/)) is loaded through source path as a ***--jars***  flag in initialization and is registered as UDF.
+
+For additional details look inside the 👉[main script](./src/run.py) comments.
 
 ## Graphs [📊]: The statistically viable reluslts on efficiency.
 
-The results for different data versions and algorithm setups were derived 100 times each.
+The results for different data versions and algorithm setups were derived **100 times** each.
 
 Reults are the following:
 For original data:

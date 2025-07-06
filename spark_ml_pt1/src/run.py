@@ -76,15 +76,15 @@ if __name__ == "__main__":
 
         spark.udf.registerJavaFunction(
             "iirf", "iirFilter", T.ArrayType(T.DoubleType())
-        )  # iir-filter на скала, написан в файле .src/scala/iirf/src/main/scala/Main.scala, jar скомпилирован в файле .src/scala/iirf/target/scala-2.12/iirf-assembly-0.1.0-SNAPSHOT.jar
-        # для скала-юдф ничего не надо создавать, юдф нативен для спарка
+        )  # iir-filter written in Scala @ .src/scala/iirf/src/main/scala/Main.scala, jar compiled @ .src/scala/iirf/target/scala-2.12/iirf-assembly-0.1.0-SNAPSHOT.jar
+        # native to Pyspark eco-system, runs on JVM and does not produce additional VM's
 
     else:
 
         spark.udf.register(
             "iirf", iir_filter, T.ArrayType(T.DoubleType())
-        )  # iir-filter на питоне, объявлен выше
-        # заставляет спарк создавать инстанс питона на воркерах для выполнения юдф, из-за чего в теории работает медленнее и занимает больше ресурсов
+        )  # iir-filter written in Python @ the beginning of script
+        # makes spark to create additional Python VM's on each executor wasting resources and enlarging time
 
     iirf_transform = lambda df, col, key_col: df.selectExpr(f"iirf({col})", key_col)
 
